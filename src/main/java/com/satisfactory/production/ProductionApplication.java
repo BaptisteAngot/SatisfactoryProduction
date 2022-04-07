@@ -5,12 +5,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.PropertySource;
 
-import java.util.Scanner;
+import java.io.IOException;
 
 @SpringBootApplication
-public class ProductionApplication implements CommandLineRunner {
+public class ProductionApplication implements CommandLineRunner{
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductionApplication.class);
 
@@ -21,12 +20,12 @@ public class ProductionApplication implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) {
+    public void run(String... args) throws IOException {
         LOG.info("EXECUTING : command line runner");
-        do {
-            Scanner scan= new Scanner(System.in);
-            String text= scan.nextLine();
-            System.out.println(text);
-        }while (true);
+//        do {
+//            Scanner scan= new Scanner(System.in);
+//            String text= scan.nextLine();
+//            System.out.println(text);
+//        }while (true);
     }
 }
