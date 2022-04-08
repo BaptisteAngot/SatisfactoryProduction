@@ -33,7 +33,5 @@ public class RecipeServiceTest {
         assertThat(recipe.getId_operation()).isEqualTo(7);
         assertThat(recipe.getId_composant1()).isEqualTo(166);
         assertThat(recipe.getQuantite1()).isEqualTo(9);
-        assertThat(recipe.getId_composant2()).isNull();
-        assertThat(recipe.getQuantite2()).isNull();
     }
 }

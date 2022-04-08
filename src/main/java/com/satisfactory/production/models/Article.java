@@ -1,9 +1,12 @@
 package com.satisfactory.production.models;
 
-import com.sun.istack.internal.NotNull;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotNull;
 
 @Data
+@NoArgsConstructor
 public class Article {
     @NotNull
     private int id;
@@ -16,4 +19,11 @@ public class Article {
 
     @NotNull
     private int id_categorie;
+
+    public Article(int id, String code, String libelle, int id_categorie) {
+        this.id = id;
+        this.code = code;
+        this.libelle = libelle;
+        this.id_categorie = id_categorie;
+    }
 }

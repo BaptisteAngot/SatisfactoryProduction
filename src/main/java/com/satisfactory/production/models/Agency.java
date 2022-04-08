@@ -1,9 +1,12 @@
 package com.satisfactory.production.models;
 
-import com.sun.istack.internal.NotNull;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import javax.validation.constraints.NotNull;
 
 @Data
+@NoArgsConstructor
 public class Agency {
     @NotNull
     private int id;
@@ -13,4 +16,10 @@ public class Agency {
 
     @NotNull
     private String libelle;
+
+    public Agency(int id, String code, String libelle) {
+        this.id = id;
+        this.code = code;
+        this.libelle = libelle;
+    }
 }
