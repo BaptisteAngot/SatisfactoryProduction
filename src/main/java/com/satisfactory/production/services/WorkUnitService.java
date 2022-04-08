@@ -2,8 +2,6 @@ package com.satisfactory.production.services;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.satisfactory.production.models.Article;
-import com.satisfactory.production.models.Recipe;
 import com.satisfactory.production.models.WorkUnit;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
@@ -12,7 +10,6 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class WorkUnitService {

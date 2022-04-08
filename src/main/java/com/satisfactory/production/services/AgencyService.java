@@ -3,7 +3,6 @@ package com.satisfactory.production.services;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.satisfactory.production.models.Agency;
-import com.satisfactory.production.models.Article;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.springframework.stereotype.Service;
@@ -18,7 +17,7 @@ public class AgencyService {
     private static final String URL_AGENCIES = "agencies/";
     private static final String URL_AGENCY = "agency/";
 
-public List<Agency> getAllAgencies() throws IOException {
+    public List<Agency> getAllAgencies() throws IOException {
         Connection.Response response = Jsoup.connect(URLBASE + URL_AGENCIES)
                 .method(Connection.Method.GET)
                 .ignoreContentType(true)
@@ -33,11 +32,11 @@ public List<Agency> getAllAgencies() throws IOException {
                 int id = objNode.get("id").asInt();
                 String code = objNode.get("code").asText();
                 String libelle = objNode.get("libelle").asText();
-                Agency agency = new Agency(id,code,libelle);
+                Agency agency = new Agency(id, code, libelle);
                 agencies.add(agency);
             }
             return agencies;
-        }else {
+        } else {
             throw new IOException("HTTP code " + response.statusCode() + " to get all agencies");
         }
     }
@@ -58,10 +57,10 @@ public List<Agency> getAllAgencies() throws IOException {
                 int id = objNode.get("id").asInt();
                 String code = objNode.get("code").asText();
                 String libelle = objNode.get("libelle").asText();
-                agency = new Agency(id,code,libelle);
+                agency = new Agency(id, code, libelle);
             }
             return agency;
-        }else {
+        } else {
             throw new IOException("HTTP code " + response.statusCode() + " to find agency at id : " + idParameter);
         }
     }

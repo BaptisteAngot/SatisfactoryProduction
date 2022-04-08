@@ -34,4 +34,14 @@ public class OperationServiceTest {
         assertThat(operation.getDelai()).isEqualTo(2);
         assertThat(operation.getDelaiInstallation()).isEqualTo(0);
     }
+
+    @Test
+    public void testGetOperationsByWorkUnit() throws IOException {
+        List<Operation> operations = operationService.getOperationsByWorkUnit(1);
+        assertThat(operations).isNotEmpty();
+        assertThat(operations.get(0).getCode()).isEqualTo("O08");
+        assertThat(operations.get(0).getDelai()).isEqualTo(2);
+        assertThat(operations.get(0).getDelaiInstallation()).isEqualTo(0);
+        assertThat(operations.get(0).getLibelle()).isEqualTo("Vernissage");
+    }
 }
