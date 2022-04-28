@@ -32,7 +32,7 @@ public class OperationServiceTest {
         assertThat(operation.getLibelle()).isEqualTo("Perçage");
         assertThat(operation.getCode()).isEqualTo("O09");
         assertThat(operation.getDelai()).isEqualTo(2);
-        assertThat(operation.getDelaiInstallation()).isEqualTo(0);
+        assertThat(operation.getDelaiInstallation()).isEqualTo(6);
     }
 
     @Test
@@ -41,7 +41,7 @@ public class OperationServiceTest {
         assertThat(operations).isNotEmpty();
         assertThat(operations.get(0).getCode()).isEqualTo("O08");
         assertThat(operations.get(0).getDelai()).isEqualTo(2);
-        assertThat(operations.get(0).getDelaiInstallation()).isEqualTo(0);
+        assertThat(operations.get(0).getDelaiInstallation()).isEqualTo(13);
         assertThat(operations.get(0).getLibelle()).isEqualTo("Vernissage");
     }
 }

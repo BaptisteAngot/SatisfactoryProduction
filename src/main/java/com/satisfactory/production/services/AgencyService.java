@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.satisfactory.production.models.Agency;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -13,7 +14,8 @@ import java.util.List;
 
 @Service
 public class AgencyService {
-    private static final String URLBASE = "http://88.168.248.140:8000/";
+    @Value("${project.api.urlbase}")
+    private String URLBASE;
     private static final String URL_AGENCIES = "agencies/";
     private static final String URL_AGENCY = "agency/";
 

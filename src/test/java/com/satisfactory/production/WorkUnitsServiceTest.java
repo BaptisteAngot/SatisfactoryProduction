@@ -33,4 +33,10 @@ public class WorkUnitsServiceTest {
         assertThat(workUnit.getLibelle()).isEqualTo("241395061");
         assertThat(workUnit.getCode()).isEqualTo("W055");
     }
+
+    @Test
+    public void testgetWorkUnitsByOperation() throws IOException {
+        List<WorkUnit> workUnits = workUnitService.getWorkUnitsByOperation(2);
+        assertThat(workUnits).isNotEmpty();
+    }
 }
