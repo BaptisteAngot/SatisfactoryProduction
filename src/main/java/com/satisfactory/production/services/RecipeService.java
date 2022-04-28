@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.satisfactory.production.models.Recipe;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -14,7 +15,8 @@ import java.util.Optional;
 
 @Service
 public class RecipeService {
-    private static final String URLBASE = "http://88.168.248.140:8000/";
+    @Value("${project.api.urlbase}")
+    private String URLBASE;
     private static final String URL_RECIPES = "recipes/";
     private static final String URL_RECIPE = "recipe/";
 
