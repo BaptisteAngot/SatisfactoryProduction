@@ -13,14 +13,14 @@ public class OperationOrder {
     private String codeArticle;
 
     @NotNull
-    private int quantite;
+    private int productQuantity;
 
     @NotNull
-    private int numOrder;
+    private int order;
 
-    public OperationOrder(String codeArticle, int quantite, int numOrder) {
+    public OperationOrder(String codeArticle, int productQuantity, int order) {
         this.codeArticle = codeArticle;
-        this.quantite = quantite;
-        this.numOrder = numOrder;
+        this.productQuantity = productQuantity;
+        this.order = order;
     }
 }
