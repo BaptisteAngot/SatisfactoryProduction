@@ -2,15 +2,12 @@ package com.satisfactory.production.services;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.json.JsonMapper;
-import com.satisfactory.production.binaryTree.BinaryTree;
 import com.satisfactory.production.models.Order;
 import com.satisfactory.production.models.Recipe;
 import com.satisfactory.production.models.Tuple;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
 import org.json.*;
-import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
