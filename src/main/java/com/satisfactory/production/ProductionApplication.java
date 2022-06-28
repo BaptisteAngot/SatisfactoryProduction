@@ -2,14 +2,11 @@ package com.satisfactory.production;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.IOException;
-
 @SpringBootApplication
-public class ProductionApplication implements CommandLineRunner{
+public class ProductionApplication{
 
     private static final Logger LOG = LoggerFactory.getLogger(ProductionApplication.class);
 
@@ -17,15 +14,5 @@ public class ProductionApplication implements CommandLineRunner{
         LOG.info("STARTING THE APPLICATION");
         SpringApplication.run(ProductionApplication.class, args);
         LOG.info("APPLICATION FINISHED");
-    }
-
-    @Override
-    public void run(String... args) throws IOException {
-        LOG.info("EXECUTING : command line runner");
-//        do {
-//            Scanner scan= new Scanner(System.in);
-//            String text= scan.nextLine();
-//            System.out.println(text);
-//        }while (true);
     }
 }

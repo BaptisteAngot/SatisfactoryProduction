@@ -2,11 +2,14 @@ package com.satisfactory.production.services;
 
 import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.json.JsonMapper;
 import com.satisfactory.production.binaryTree.BinaryTree;
 import com.satisfactory.production.models.Order;
 import com.satisfactory.production.models.Recipe;
+import com.satisfactory.production.models.Tuple;
 import org.jsoup.Connection;
 import org.jsoup.Jsoup;
+import org.json.*;
 import org.jsoup.nodes.Document;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -28,12 +31,13 @@ public class ProductionService {
     @Autowired
     BinaryTreeService binaryTreeService;
 
-    public void launchProduction(int idArticle, int qty) throws IOException {
+    public JSONObject launchProduction(int idArticle, int qty) throws IOException {
         Recipe recipe = recipeService.getRecipe(idArticle);
-        BinaryTree bt = binaryTreeService.map(recipe);
-        List<Order> orderList = binaryTreeService.getOrderList(bt.getRoot(), qty);
+        Tuple tuple = binaryTreeService.map(recipe);
+
+        List<Order> orderList = binaryTreeService.getOrderList(tuple.getTree().getRoot(), qty, tuple.getListWorkUnits());
         Connection.Response test = makeRequest(orderList);
-        System.out.println(test.body());
+        return new JSONObject(test.body());
     }
 
     private Connection.Response makeRequest(List<Order> orderList) throws IOException {
