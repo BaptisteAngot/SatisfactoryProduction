@@ -3,21 +3,12 @@ package com.satisfactory.production.models;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import javax.validation.constraints.NotNull;
-
 @Data
 @NoArgsConstructor
 public class Recipe {
-    @NotNull
     private int id_article;
-
-    @NotNull
     private int id_operation;
-
-    @NotNull
     private int id_composant1;
-
-    @NotNull
     private int quantite1;
 
     private int id_composant2;
