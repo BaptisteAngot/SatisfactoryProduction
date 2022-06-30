@@ -7,10 +7,10 @@ import lombok.Data;
 @Builder
 public class TupleOrder {
     private Integer deep;
-    private Recipe recipe;
+    private Integer qty;
 
-    public TupleOrder(Integer deep, Recipe recipe) {
+    public TupleOrder(Integer deep, Integer qty) {
         this.deep = deep;
-        this.recipe = recipe;
+        this.qty = qty;
     }
 }

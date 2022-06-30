@@ -69,49 +69,85 @@ public class BinaryTreeService {
         List<Order> orderList = new ArrayList<>();
         List<Article> articles = articleService.getAllArticles();
         List<Operation> operationList = operationService.getAllOperations();
-        LinkedHashMap<TupleOrder, Integer> articleQty = new LinkedHashMap<>();
+        LinkedHashMap<Recipe, TupleOrder> articleQty = new LinkedHashMap<>();
         parcoursPostfixe(node, qty, articleQty);
-        LinkedHashMap<TupleOrder, Integer> articleQtySorted =  articleQty.entrySet()
+        LinkedHashMap<Recipe, TupleOrder> articleQtySorted =  articleQty.entrySet()
                 .stream()
-                .sorted(Comparator.comparing(tupleOrderIntegerEntry -> tupleOrderIntegerEntry.getKey().getDeep()))
+                .sorted(Comparator.comparing(tupleOrderIntegerEntry -> tupleOrderIntegerEntry.getValue().getDeep()))
                 .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e2, LinkedHashMap::new));
         // create order here
-        for (Map.Entry<TupleOrder, Integer> entryArticleQty : articleQtySorted.entrySet()) {
+        for (Map.Entry<Recipe, TupleOrder> entryArticleQty : articleQtySorted.entrySet()) {
             boolean pushed = false;
             Optional<Article> optArticle = articles.stream()
-                    .filter(a -> a.getId() == entryArticleQty.getKey().getRecipe().getId_article())
+                    .filter(a -> a.getId() == entryArticleQty.getKey().getId_article())
                     .findFirst();
+
             Optional<Operation> optOperation = operationList.stream()
-                    .filter(operation -> operation.getId() == entryArticleQty.getKey().getRecipe().getId_operation())
+                    .filter(operation -> operation.getId() == entryArticleQty.getKey().getId_operation())
                     .findFirst();
 
             int delais = 0;
             if(optOperation.isPresent()) {
                 Operation operation = optOperation.get();
                 delais = operation.getDelaiInstallation();
-                delais += operation.getDelai() * entryArticleQty.getValue();
+                delais += operation.getDelai() * entryArticleQty.getValue().getQty();
             }
 
             // article1 = article/2
 
-            // 4 = 200/50
-            int div = entryArticleQty.getValue() / 100;
+            // int div = entryArticleQty.getValue().getQty() / 100;
 
-            int loop = 1;
-            do {
-                for (Map.Entry<WorkUnit, Set<Integer>> entryWorkUnit : listWorkUnits.entrySet()) {
+            List<Map.Entry<WorkUnit,Set<Integer>>> workUnitListFiltered = listWorkUnits
+                    .entrySet()
+                    .stream()
+                    .filter(workUnitSetEntry -> {
+                        // take only workUnit with the same operation
+                        return workUnitSetEntry.getValue().contains(entryArticleQty.getKey().getId_operation());
+                    })
+                    .collect(Collectors.toList());
 
-                    Optional<Order> optOrder = orderList.stream()
-                            .filter(order -> entryWorkUnit.getKey().getCode().equals(order.getCodeWorkUnit()))
-                            .findFirst();
-                    Optional<OperationOrder> optDeep = null;
-                    if (optOrder.isPresent()){
-                        optDeep = optOrder.get().getProductOperations().stream()
-                                .filter(tupleOrder -> tupleOrder.getOrder() == entryArticleQty.getKey().getDeep())
-                                .findFirst();
+
+
+            int loop = 0;
+
+
+            WorkUnit workUnitSelected = null;
+            int nbOperation = 99999999;
+            for (Map.Entry<WorkUnit, Set<Integer>> entryWorkUnit : workUnitListFiltered){
+                if (orderList.size() == 0){
+                    workUnitSelected = entryWorkUnit.getKey();
+                    break;
+                }else {
+                    for (Order order: orderList) {
+                        if (order.getCodeWorkUnit().equals(entryWorkUnit.getKey().getCode())){
+                            if(order.getProductOperations().size() < nbOperation){
+                                nbOperation = order.getProductOperations().size();
+                                workUnitSelected = entryWorkUnit.getKey();
+                            }
+                        }else{
+                            workUnitSelected = entryWorkUnit.getKey();
+                            break;
+                        }
                     }
+                }
+            }
+            do {
+                WorkUnit finalWorkUnitSelected = workUnitSelected;
+                Optional<Order> optOrder = orderList.stream()
+                        .filter(order -> {
+                            assert finalWorkUnitSelected != null;
+                            return finalWorkUnitSelected.getCode().equals(order.getCodeWorkUnit());
+                        })
+                        .findFirst();
 
-                    Integer delaiTotalWorkunit = workUnits.getOrDefault(entryWorkUnit.getKey(), 0);
+                Optional<OperationOrder> optDeep = null;
+                if (optOrder.isPresent()){
+                    optDeep = optOrder.get().getProductOperations().stream()
+                            .filter(tupleOrder -> tupleOrder.getOrder() == entryArticleQty.getValue().getDeep())
+                            .findFirst();
+                }
+
+                    /*Integer delaiTotalWorkunit = workUnits.getOrDefault(entryWorkUnit.getKey(), 0);
 
                     int moyenne = 0;
                     for (Map.Entry<WorkUnit, Integer> workUnitIntegerMap: workUnits.entrySet()) {
@@ -119,43 +155,39 @@ public class BinaryTreeService {
                     }
                     if (workUnits.size() != 0) {
                         moyenne = moyenne / workUnits.size();
-                    }
+                    }*/
 
-                    if (entryWorkUnit.getValue().contains(entryArticleQty.getKey().getRecipe().getId_operation()) &&
-                            (!optOrder.isPresent() || !optDeep.isPresent()) &&
-                            (moyenne == 0 || moyenne*loop > delaiTotalWorkunit+delais)
-                    ) {
+                if ((!optOrder.isPresent() || !optDeep.isPresent())) {
 
-                        if (optArticle.isPresent()) {
-                            Article article = optArticle.get();
-                            int res =
-                                    div == 0 ?
-                                    entryArticleQty.getValue() :
-                                    div+1 == loop ?
-                                            (entryArticleQty.getValue() % div) + (entryArticleQty.getValue() / div) :
-                                            entryArticleQty.getValue() / div;
+                    if (optArticle.isPresent()) {
+                        Article article = optArticle.get();
+                        /*int res =
+                                div == 0 ?
+                                        entryArticleQty.getValue().getQty() :
+                                        div+1 == loop ?
+                                                (entryArticleQty.getValue().getQty() % div) + (entryArticleQty.getValue().getQty() / div) :
+                                                entryArticleQty.getValue().getQty() / div;*/
 
-                            if (optOrder.isPresent()){
-                                workUnits.put(entryWorkUnit.getKey(), workUnits.get(entryWorkUnit.getKey()) + delais);
-                                OperationOrder operationOrder = new OperationOrder(article.getCode(), res, entryArticleQty.getKey().getDeep());
-                                optOrder.get().getProductOperations().add(operationOrder);
-                            }else{
-                                Order order = new Order();
-                                workUnits.put(entryWorkUnit.getKey(), delais);
-                                order.setCodeWorkUnit(entryWorkUnit.getKey().getCode());
-                                List<OperationOrder> operationOrderList = new ArrayList<>();
-                                OperationOrder operationOrder = new OperationOrder(article.getCode(), res, entryArticleQty.getKey().getDeep());
-                                operationOrderList.add(operationOrder);
-                                order.setProductOperations(operationOrderList);
-                                orderList.add(order);
-                            }
+                        if (optOrder.isPresent()){
+                            workUnits.put(finalWorkUnitSelected, workUnits.get(finalWorkUnitSelected) + delais);
+                            OperationOrder operationOrder = new OperationOrder(article.getCode(), entryArticleQty.getValue().getQty(), entryArticleQty.getValue().getDeep());
+                            optOrder.get().getProductOperations().add(operationOrder);
+                        }else{
+                            Order order = new Order();
+                            workUnits.put(finalWorkUnitSelected, delais);
+                            assert finalWorkUnitSelected != null;
+                            order.setCodeWorkUnit(finalWorkUnitSelected.getCode());
+                            List<OperationOrder> operationOrderList = new ArrayList<>();
+                            OperationOrder operationOrder = new OperationOrder(article.getCode(), entryArticleQty.getValue().getQty(), entryArticleQty.getValue().getDeep());
+                            operationOrderList.add(operationOrder);
+                            order.setProductOperations(operationOrderList);
+                            orderList.add(order);
                         }
-                        pushed = true;
-                        break;
                     }
+                    break;
                 }
                 loop++;
-            }while (!pushed && loop != div+1);
+            }while (false);
 
         }
 
@@ -172,21 +204,26 @@ public class BinaryTreeService {
         return oderListToReturn;
     }
 
-    private int parcoursPostfixe(Node node, int qty, LinkedHashMap<TupleOrder, Integer> articleQty) {
+    private int parcoursPostfixe(Node node, int qty, LinkedHashMap<Recipe, TupleOrder> articleQty) {
         int y = 1;
         int x = 1;
         if (node.getLeft() != null) {
-            y = parcoursPostfixe(node.getLeft(), node.getRecipe().getQuantite1(), articleQty);
+            y = parcoursPostfixe(node.getLeft(), node.getRecipe().getQuantite1()*qty, articleQty);
         }
         if (node.getRight() != null) {
-            x = parcoursPostfixe(node.getRight(), node.getRecipe().getQuantite2(), articleQty);
+            x = parcoursPostfixe(node.getRight(), node.getRecipe().getQuantite2()*qty, articleQty);
         }
         int i = Math.max(y, x);
-        TupleOrder tupleOrder = new TupleOrder(i, node.getRecipe());
-        if (articleQty.containsKey(tupleOrder)){
-            articleQty.put(tupleOrder,articleQty.get(tupleOrder) + qty);
+
+        if (articleQty.containsKey(node.getRecipe())){
+            TupleOrder tupleOrder = articleQty.get(node.getRecipe());
+            tupleOrder.setQty(tupleOrder.getQty()+qty);
+            articleQty.put(
+                    node.getRecipe(),
+                    tupleOrder);
         }else{
-            articleQty.put(tupleOrder, qty);
+            TupleOrder tupleOrder = new TupleOrder(i,qty);
+            articleQty.put(node.getRecipe(), tupleOrder);
         }
         return i+1;
     }
