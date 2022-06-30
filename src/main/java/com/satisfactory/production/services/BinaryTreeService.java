@@ -95,7 +95,8 @@ public class BinaryTreeService {
 
             // article1 = article/2
 
-            // int div = entryArticleQty.getValue().getQty() / 100;
+            // 4 / 21 = 0
+
 
             List<Map.Entry<WorkUnit,Set<Integer>>> workUnitListFiltered = listWorkUnits
                     .entrySet()
@@ -104,24 +105,27 @@ public class BinaryTreeService {
                         // take only workUnit with the same operation
                         return workUnitSetEntry.getValue().contains(entryArticleQty.getKey().getId_operation());
                     })
+                    .sorted(Comparator.comparing(workUnitSetEntry -> workUnitSetEntry.getValue().size()))
                     .collect(Collectors.toList());
 
-
+            int div = entryArticleQty.getValue().getQty() / (workUnitListFiltered.size()/2);
 
             int loop = 0;
 
-
-            WorkUnit workUnitSelected = null;
-            int nbOperation = 99999999;
-            for (Map.Entry<WorkUnit, Set<Integer>> entryWorkUnit : workUnitListFiltered){
-                if (orderList.size() == 0){
-                    workUnitSelected = entryWorkUnit.getKey();
-                    break;
-                }else {
-                    for (Order order: orderList) {
-                        if (order.getCodeWorkUnit().equals(entryWorkUnit.getKey().getCode())){
-                            if(order.getProductOperations().size() < nbOperation){
-                                nbOperation = order.getProductOperations().size();
+            do {
+                WorkUnit workUnitSelected = null;
+                int nbOperation = 99999999;
+                for (Map.Entry<WorkUnit, Set<Integer>> entryWorkUnit : workUnitListFiltered){
+                    if (orderList.size() == 0){
+                        workUnitSelected = entryWorkUnit.getKey();
+                        break;
+                    }else {
+                        Optional<Order> order = orderList.stream()
+                                .filter(item -> item.getCodeWorkUnit().equals(entryWorkUnit.getKey().getCode()))
+                                .findFirst();
+                        if (order.isPresent()){
+                            if(order.get().getProductOperations().size() < nbOperation){
+                                nbOperation = order.get().getProductOperations().size();
                                 workUnitSelected = entryWorkUnit.getKey();
                             }
                         }else{
@@ -130,8 +134,6 @@ public class BinaryTreeService {
                         }
                     }
                 }
-            }
-            do {
                 WorkUnit finalWorkUnitSelected = workUnitSelected;
                 Optional<Order> optOrder = orderList.stream()
                         .filter(order -> {
@@ -161,16 +163,16 @@ public class BinaryTreeService {
 
                     if (optArticle.isPresent()) {
                         Article article = optArticle.get();
-                        /*int res =
+                        int res =
                                 div == 0 ?
                                         entryArticleQty.getValue().getQty() :
-                                        div+1 == loop ?
-                                                (entryArticleQty.getValue().getQty() % div) + (entryArticleQty.getValue().getQty() / div) :
-                                                entryArticleQty.getValue().getQty() / div;*/
+                                        (workUnitListFiltered.size()/2) == loop+1 ?
+                                                (entryArticleQty.getValue().getQty() % (workUnitListFiltered.size()/2)) + (entryArticleQty.getValue().getQty() / (workUnitListFiltered.size()/2)) :
+                                                entryArticleQty.getValue().getQty() / (workUnitListFiltered.size()/2);
 
                         if (optOrder.isPresent()){
                             workUnits.put(finalWorkUnitSelected, workUnits.get(finalWorkUnitSelected) + delais);
-                            OperationOrder operationOrder = new OperationOrder(article.getCode(), entryArticleQty.getValue().getQty(), entryArticleQty.getValue().getDeep());
+                            OperationOrder operationOrder = new OperationOrder(article.getCode(), res, entryArticleQty.getValue().getDeep());
                             optOrder.get().getProductOperations().add(operationOrder);
                         }else{
                             Order order = new Order();
@@ -178,16 +180,15 @@ public class BinaryTreeService {
                             assert finalWorkUnitSelected != null;
                             order.setCodeWorkUnit(finalWorkUnitSelected.getCode());
                             List<OperationOrder> operationOrderList = new ArrayList<>();
-                            OperationOrder operationOrder = new OperationOrder(article.getCode(), entryArticleQty.getValue().getQty(), entryArticleQty.getValue().getDeep());
+                            OperationOrder operationOrder = new OperationOrder(article.getCode(), res, entryArticleQty.getValue().getDeep());
                             operationOrderList.add(operationOrder);
                             order.setProductOperations(operationOrderList);
                             orderList.add(order);
                         }
                     }
-                    break;
                 }
                 loop++;
-            }while (false);
+            }while (loop != (workUnitListFiltered.size()/2)+1 && div != 0);
 
         }
 
