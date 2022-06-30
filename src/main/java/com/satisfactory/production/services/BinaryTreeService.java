@@ -93,10 +93,10 @@ public class BinaryTreeService {
 
     private void parcoursPostfixe(Node node, int qty, List<WorkUnit> workUnits, List<Order> orderList, List<Article> articles, Map<WorkUnit, Set<Integer>> listWorkUnits, LinkedHashMap<Recipe, Integer> articleQty) throws IOException {
         if (node.getLeft() != null) {
-            parcoursPostfixe(node.getLeft(), node.getRecipe().getQuantite1(), workUnits, orderList, articles, listWorkUnits, articleQty);
+            parcoursPostfixe(node.getLeft(), node.getRecipe().getQuantite1() * qty, workUnits, orderList, articles, listWorkUnits, articleQty);
         }
         if (node.getRight() != null) {
-            parcoursPostfixe(node.getRight(), node.getRecipe().getQuantite2(), workUnits, orderList, articles, listWorkUnits, articleQty);
+            parcoursPostfixe(node.getRight(), node.getRecipe().getQuantite2() * qty, workUnits, orderList, articles, listWorkUnits, articleQty);
         }
         articleQty.put(node.getRecipe(), articleQty.getOrDefault(node.getRecipe(), 0) + qty);
 
